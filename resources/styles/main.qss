@@ -1,0 +1,171 @@
+/* 全局样式 */  
+* {  
+    font-family: "Microsoft YaHei", Arial, sans-serif;  
+}  
+
+/* 主窗口 */  
+QMainWindow {  
+    background-color: #f5f6fa;  
+}  
+
+/* 导航栏 */  
+#navWidget {  
+    background-color: #2c3e50;  
+    border: none;  
+}  
+
+#logoLabel {  
+    color: #ffffff;  
+    font-size: 20px;  
+    font-weight: bold;  
+    padding: 20px 0;  
+}  
+
+#separatorLine {  
+    background-color: #34495e;  
+    height: 1px;  
+}  
+
+/* 导航按钮 */  
+NavigationButton {  
+    background-color: transparent;  
+    border: none;  
+    border-radius: 5px;  
+    color: #ecf0f1;  
+    text-align: left;  
+    padding: 10px 15px;  
+    font-size: 14px;  
+    icon-size: 24px 24px; /* Keep icon size consistent */  
+}  
+
+
+NavigationButton:hover {  
+    background-color: #34495e;  
+}  
+
+NavigationButton:checked {  
+    background-color: #3498db;  
+    color: white;  
+}  
+
+NavigationButton:pressed {  
+    background-color: #2980b9;  
+}  
+
+/* 内容区 */  
+#contentWidget {  
+    background-color: #ffffff;  
+    border-radius: 10px;  
+    margin: 10px;  
+}  
+
+#pageTitle {  
+    color: #2c3e50;  
+    font-size: 24px;  
+    font-weight: bold;  
+}  
+
+#userInfo {  
+    color: #7f8c8d;  
+    font-size: 14px;  
+}  
+
+/* 堆叠窗口 */  
+QStackedWidget {  
+    background: transparent;  
+    border: none;  
+}  
+
+/* 滚动条样式 */  
+QScrollBar:vertical {  
+    border: none;  
+    background: #f1f1f1;  
+    width: 8px;  
+    border-radius: 4px;  
+}  
+
+QScrollBar::handle:vertical {  
+    background: #bdc3c7;  
+    border-radius: 4px;  
+}  
+
+QScrollBar::handle:vertical:hover {  
+    background: #95a5a6;  
+}  
+
+/* 其他控件样式 */  
+QPushButton {  
+    background-color: #3498db;  
+    color: white;  
+    border: none;  
+    border-radius: 5px;  
+    padding: 8px 15px;  
+    font-size: 14px;  
+}  
+
+QPushButton:hover {  
+    background-color: #2980b9;  
+}  
+
+QPushButton:pressed {  
+    background-color: #2574a9;  
+}  
+
+QLabel {  
+    color: #2c3e50;  
+}  
+
+/* 表格样式 */  
+QTableView {  
+    border: 1px solid #dcdde1;  
+    border-radius: 5px;  
+    background-color: #ffffff;  
+    gridline-color: #f1f2f6;  
+}  
+
+QTableView::item {  
+    padding: 5px;  
+}  
+
+QTableView::item:selected {  
+    background-color: #3498db;  
+    color: white;  
+}  
+
+/* 下拉框样式 */  
+QComboBox {  
+    border: 1px solid #dcdde1;  
+    border-radius: 5px;  
+    padding: 5px;  
+    background-color: white;  
+}  
+
+QComboBox::drop-down {  
+    border: none;  
+    width: 20px;  
+    subcontrol-origin: padding; /* Important for positioning */  
+    subcontrol-position: top right; /* Position the arrow */  
+    right: 5px; /* Add some space from the right edge */  
+}  
+
+/* CSS-only down arrow for QComboBox */  
+QComboBox::down-arrow {  
+    /* Remove the image */  
+    /* image: url(resources/icons/down-arrow.png); */  
+    width: 0;  
+    height: 0;  
+    border-left: 5px solid transparent;  
+    border-right: 5px solid transparent;  
+    border-top: 6px solid #555; /* Dark gray arrow */  
+    margin-right: 5px; /* Add space */  
+}  
+QComboBox::down-arrow:on { /* When the dropdown is open */  
+    border-top-color: #3498db;  /* Change color when open */  
+}  
+
+/* Style the dropdown list */  
+QComboBox QAbstractItemView {  
+    border: 1px solid #dcdde1;  
+    background-color: white;  
+    selection-background-color: #3498db; /* Highlight color */  
+}

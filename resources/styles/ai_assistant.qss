@@ -1,0 +1,73 @@
+/* AI助手样式 */  
+QWidget {  
+    background-color: #ffffff;  
+    color: #333333;  
+}  
+
+QScrollArea {  
+    border: none;  
+    background-color: transparent;  
+}  
+
+QScrollArea > QWidget > QWidget {  
+    background-color: transparent;  
+}  
+
+QTextEdit {  
+    border: 1px solid #e0e0e0;  
+    border-radius: 5px;  
+    padding: 10px;  
+    background-color: #ffffff;  
+    font-size: 14px;  
+}  
+
+QTextEdit[user_message="true"] {  
+    background-color: #e3f2fd;  
+    border-color: #90caf9;  
+}  
+
+QTextEdit[assistant_message="true"] {  
+    background-color: #f5f5f5;  
+    border-color: #e0e0e0;  
+}  
+
+QPushButton {  
+    background-color: #1976d2;  
+    color: white;  
+    border: none;  
+    border-radius: 5px;  
+    padding: 10px;  
+    font-size: 14px;  
+}  
+
+QPushButton:hover {  
+    background-color: #1565c0;  
+}  
+
+QPushButton:pressed {  
+    background-color: #0d47a1;  
+}  
+
+/* 滚动条样式 */  
+QScrollBar:vertical {  
+    border: none;  
+    background: #f0f0f0;  
+    width: 8px;  
+    margin: 0px 0px 0px 0px;  
+}  
+
+QScrollBar::handle:vertical {  
+    background: #c0c0c0;  
+    min-height: 20px;  
+    border-radius: 4px;  
+}  
+
+QScrollBar::add-line:vertical,  
+QScrollBar::sub-line:vertical {  
+    height: 0px;  
+}  
+
+QScrollBar::add-page:vertical,  
+QScrollBar::sub-page:vertical {  
+    background: none;  
+}

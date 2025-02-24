@@ -1,0 +1,176 @@
+/* settings.qss */  
+
+/* 整体容器样式 */  
+QWidget#settingsContainer {  
+    background-color: #ffffff;  
+    border-radius: 8px;  
+}  
+
+/* 标题样式 */  
+QLabel#titleLabel {  
+    font-family: "Microsoft YaHei";  
+    font-size: 24px;  
+    font-weight: bold;  
+    color: #333333;  
+    padding: 10px 0;  
+}  
+
+/* 分组标题样式 */  
+QLabel.groupTitle {  
+    font-family: "Microsoft YaHei";  
+    font-size: 16px;  
+    font-weight: bold;  
+    color: #2c7873;  
+    padding: 15px 0 5px 0;  
+}  
+
+/* 普通标签样式 */  
+QLabel {  
+    font-family: "Microsoft YaHei";  
+    font-size: 14px;  
+    color: #333333;  
+}  
+
+/* 下拉框样式 */  
+QComboBox {  
+    min-width: 200px;  
+    min-height: 32px;  
+    padding: 5px 10px;  
+    font-family: "Microsoft YaHei";  
+    font-size: 14px;  
+    border: 1px solid #dddddd;  
+    border-radius: 4px;  
+    background-color: #ffffff;  
+}  
+
+QComboBox:hover {  
+    border: 1px solid #2c7873;  
+}  
+
+QComboBox:focus {  
+    border: 1px solid #2c7873;  
+    outline: none;  
+}  
+
+QComboBox::drop-down {  
+    border: none;  
+    width: 30px;  
+}  
+
+QComboBox::down-arrow {  
+    image: url(resources/icons/down_arrow.png);  
+    width: 12px;  
+    height: 12px;  
+}  
+
+/* 复选框样式 */  
+QCheckBox {  
+    font-family: "Microsoft YaHei";  
+    font-size: 14px;  
+    color: #333333;  
+    spacing: 8px;  
+    min-height: 32px;  
+}  
+
+QCheckBox::indicator {  
+    width: 18px;  
+    height: 18px;  
+    border: 2px solid #dddddd;  
+    border-radius: 4px;  
+    background-color: #ffffff;  
+}  
+
+QCheckBox::indicator:hover {  
+    border-color: #2c7873;  
+}  
+
+QCheckBox::indicator:checked {  
+    background-color: #2c7873;  
+    border-color: #2c7873;  
+    image: url(resources/icons/check.png);  
+}  
+
+/* 滚动区域样式 */  
+QScrollArea {  
+    border: none;  
+    background-color: transparent;  
+}  
+
+QScrollArea > QWidget > QWidget {  
+    background-color: transparent;  
+}  
+
+/* 滚动条样式 */  
+QScrollBar:vertical {  
+    border: none;  
+    background-color: #f5f5f5;  
+    width: 8px;  
+    border-radius: 4px;  
+}  
+
+QScrollBar::handle:vertical {  
+    background-color: #cccccc;  
+    border-radius: 4px;  
+    min-height: 30px;  
+}  
+
+QScrollBar::handle:vertical:hover {  
+    background-color: #999999;  
+}  
+
+QScrollBar::add-line:vertical,  
+QScrollBar::sub-line:vertical {  
+    height: 0px;  
+}  
+
+/* 分割线样式 */  
+QFrame[frameShape="4"] {  
+    color: #dddddd;  
+    height: 1px;  
+}  
+
+/* 按钮样式 */  
+QPushButton {  
+    min-width: 100px;  
+    min-height: 32px;  
+    padding: 6px 20px;  
+    font-family: "Microsoft YaHei";  
+    font-size: 14px;  
+    border-radius: 4px;  
+}  
+
+/* 保存按钮样式 */  
+QPushButton#saveButton {  
+    background-color: #2c7873;  
+    color: #ffffff;  
+    border: none;  
+}  
+
+QPushButton#saveButton:hover {  
+    background-color: #1f5f5b;  
+}  
+
+QPushButton#saveButton:pressed {  
+    background-color: #1a4f4c;  
+}  
+
+/* 取消按钮样式 */  
+QPushButton#cancelButton {  
+    background-color: #f5f5f5;  
+    color: #333333;  
+    border: 1px solid #dddddd;  
+}  
+
+QPushButton#cancelButton:hover {  
+    background-color: #e8e8e8;  
+}  
+
+QPushButton#cancelButton:pressed {  
+    background-color: #dddddd;  
+}  
+
+/* 禁用状态样式 */  
+QWidget:disabled {  
+    color: #999999;  
+    background-color: #f5f5f5;  
+}

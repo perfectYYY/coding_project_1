@@ -1,0 +1,15 @@
+{
+  "20250223124834": {
+    "id": "20250223124834",
+    "name": "Open Genshin",
+    "device": "Device 1",
+    "type": "巡检任务",
+    "start_time": "2025-02-23 12:48:16",
+    "duration": 30,
+    "altitude": 100,
+    "description": "",
+    "priority": "高",
+    "auto_execute": true,
+    "status": "待执行"
+  }
+}

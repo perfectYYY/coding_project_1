@@ -1,0 +1,96 @@
+/* resources/styles/login.qss */  
+
+/* 主窗口样式 */  
+QMainWindow {  
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,  
+                              stop:0 #2C3E50, stop:1 #3498DB);  
+}  
+
+/* 输入框样式 */  
+QLineEdit {  
+    padding: 8px;  
+    border: 2px solid #34495E;  
+    border-radius: 6px;  
+    background-color: rgba(255, 255, 255, 0.9);  
+    font-size: 14px;  
+    selection-background-color: #3498DB;  
+}  
+
+QLineEdit:focus {  
+    border: 2px solid #3498DB;  
+    background-color: white;  
+}  
+
+/* 按钮样式 */  
+QPushButton {  
+    padding: 8px 16px;  
+    border-radius: 6px;  
+    font-size: 14px;  
+    font-weight: bold;  
+    color: white;  
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,  
+                              stop:0 #3498DB, stop:1 #2980B9);  
+    border: none;  
+}  
+
+QPushButton:hover {  
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,  
+                              stop:0 #2980B9, stop:1 #2573A7);  
+}  
+
+QPushButton:pressed {  
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,  
+                              stop:0 #2573A7, stop:1 #2980B9);  
+}  
+
+/* 标签样式 */  
+QLabel {  
+    color: white;  
+    font-size: 14px;  
+}  
+
+/* 标题标签特殊样式 */  
+QLabel#title {  
+    font-size: 28px;  
+    font-weight: bold;  
+    color: white;  
+    padding: 10px;  
+}  
+
+/* 副标题样式 */  
+QLabel#subtitle {  
+    color: rgba(255, 255, 255, 0.7);  
+    font-size: 16px;  
+}  
+
+/* 表单容器样式 */  
+QWidget#formContainer {  
+    background-color: rgba(255, 255, 255, 0.1);  
+    border-radius: 10px;  
+}  
+
+/* 透明按钮样式 */  
+QPushButton#transparentButton {  
+    background: transparent;  
+    border: 2px solid #3498DB;  
+}  
+
+QPushButton#transparentButton:hover {  
+    background: rgba(52, 152, 219, 0.2);  
+}
+
+/* 登录成功提示标签样式 */  
+QLabel#successLabel {  
+    color: #2ECC71;  
+    font-size: 16px;  
+    font-weight: bold;  
+    background-color: rgba(46, 204, 113, 0.1);  
+    border-radius: 20px;  
+    padding: 10px;  
+}  
+
+/* 加载动画容器 */  
+QWidget#loadingContainer {  
+    background-color: rgba(255, 255, 255, 0.95);  
+    border-radius: 10px;  
+}  

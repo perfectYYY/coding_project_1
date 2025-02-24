@@ -1,0 +1,186 @@
+/* 监控页面整体样式 */  
+QWidget {  
+    background-color: #f5f6fa;  
+    font-family: "Microsoft YaHei", Arial, sans-serif;  
+}  
+
+/* 顶部信息栏样式 */  
+QLabel {  
+    color: #2c3e50;  
+    font-size: 14px;  
+    padding: 5px;  
+}  
+
+QLabel[info="true"] {  
+    background-color: #ecf0f1;  
+    border-radius: 4px;  
+    padding: 5px 10px;  
+}  
+
+/* 设备监控卡片样式 */  
+DeviceMonitorCard {  
+    background-color: white;  
+    border: 1px solid #dcdde1;  
+    border-radius: 8px;  
+    padding: 15px;  
+}  
+
+DeviceMonitorCard:hover {  
+    border: 2px solid #3498db;  /* 增加边框宽度 */  
+    background-color: #f8f9ff;  /* 轻微改变背景色 */  
+    margin: -1px;  /* 补偿边框增加造成的偏移 */  
+}  
+
+/* 设备标题样式 */  
+DeviceMonitorCard QLabel[title="true"] {  
+    font-size: 16px;  
+    font-weight: bold;  
+    color: #2c3e50;  
+}  
+
+/* 状态标签样式 */  
+QLabel[status="online"] {  
+    color: #27ae60;  
+    font-weight: bold;  
+}  
+
+QLabel[status="offline"] {  
+    color: #c0392b;  
+    font-weight: bold;  
+}  
+
+/* LCD显示屏样式 */  
+QLCDNumber {  
+    background-color: #2c3e50;  
+    color: #2ecc71;  
+    border: 1px solid #34495e;  
+    border-radius: 4px;  
+    padding: 2px;  
+    min-height: 40px;  
+}  
+
+/* 进度条基础样式 */  
+QProgressBar {  
+    border: 1px solid #bdc3c7;  
+    border-radius: 3px;  
+    text-align: center;  
+    background-color: #ecf0f1;  
+    min-height: 20px;  
+}  
+
+QProgressBar::chunk {  
+    background-color: #2ecc71;  
+    border-radius: 2px;  
+}  
+
+/* 电池进度条特殊样式 */  
+QProgressBar[battery="true"]::chunk {  
+    background-color: #2ecc71;  
+}  
+
+QProgressBar[battery="low"]::chunk {  
+    background-color: #e74c3c;  
+}  
+
+/* GPS和信号强度进度条样式 */  
+QProgressBar[signal="true"]::chunk {  
+    background-color: #3498db;  
+}  
+
+/* 任务进度条样式 */  
+QProgressBar[task="true"] {  
+    border: 1px solid #3498db;  
+}  
+
+QProgressBar[task="true"]::chunk {  
+    background-color: #3498db;  
+}  
+
+/* 分组框样式 */  
+QGroupBox {  
+    border: 1px solid #bdc3c7;  
+    border-radius: 4px;  
+    margin-top: 10px;  
+    font-weight: bold;  
+    color: #2c3e50;  
+}  
+
+QGroupBox::title {  
+    subcontrol-origin: margin;  
+    left: 10px;  
+    padding: 0 3px;  
+}  
+
+/* 按钮样式 */  
+QPushButton {  
+    border: none;  
+    border-radius: 4px;  
+    padding: 8px 15px;  
+    font-weight: bold;  
+    min-width: 80px;  
+    color: white;  
+}  
+
+QPushButton[primary="true"] {  
+    background-color: #3498db;  
+}  
+
+QPushButton[primary="true"]:hover {  
+    background-color: #2980b9;  
+}  
+
+QPushButton[primary="true"]:pressed {  
+    background-color: #2472a4;  
+}  
+
+QPushButton[danger="true"] {  
+    background-color: #e74c3c;  
+}  
+
+QPushButton[danger="true"]:hover {  
+    background-color: #c0392b;  
+}  
+
+QPushButton[danger="true"]:pressed {  
+    background-color: #a93226;  
+}  
+
+/* 滚动区域样式 */  
+QScrollArea {  
+    border: none;  
+    background-color: transparent;  
+}  
+
+QScrollBar:vertical {  
+    border: none;  
+    background-color: #f5f6fa;  
+    width: 10px;  
+    margin: 0;  
+}  
+
+QScrollBar::handle:vertical {  
+    background-color: #bdc3c7;  
+    border-radius: 5px;  
+    min-height: 20px;  
+}  
+
+QScrollBar::handle:vertical:hover {  
+    background-color: #95a5a6;  
+}  
+
+QScrollBar::add-line:vertical,  
+QScrollBar::sub-line:vertical {  
+    border: none;  
+    background: none;  
+}  
+
+QScrollBar::add-page:vertical,  
+QScrollBar::sub-page:vertical {  
+    background: none;  
+}  
+
+/* 网格布局容器样式 */  
+#cards_container {  
+    background-color: transparent;  
+    margin: 10px;  
+}

@@ -1,0 +1,107 @@
+/* 地图页面样式 */  
+QWidget {  
+    background-color: #f5f6fa;  
+    font-family: "Microsoft YaHei", Arial, sans-serif;  
+}  
+
+/* 工具栏样式 */  
+QComboBox {  
+    border: 1px solid #bdc3c7;  
+    border-radius: 4px;  
+    padding: 5px;  
+    min-width: 100px;  
+    background: white;  
+}  
+
+QComboBox:hover {  
+    border-color: #3498db;  
+}  
+
+QComboBox::drop-down {  
+    border: none;  
+    width: 20px;  
+}  
+
+QComboBox::down-arrow {  
+    image: url(resources/icons/down-arrow.png);  
+}  
+
+/* 按钮样式 */  
+QPushButton {  
+    border: none;  
+    border-radius: 4px;  
+    padding: 8px 15px;  
+    font-weight: bold;  
+    min-width: 80px;  
+    color: white;  
+    background-color: #3498db;  
+}  
+
+QPushButton:hover {  
+    background-color: #2980b9;  
+}  
+
+QPushButton:pressed {  
+    background-color: #2472a4;  
+}  
+
+QPushButton:disabled {  
+    background-color: #bdc3c7;  
+}  
+
+QPushButton#route_btn {  
+    background-color: #27ae60;  
+}  
+
+QPushButton#route_btn:hover {  
+    background-color: #219a52;  
+}  
+
+QPushButton#area_btn {  
+    background-color: #8e44ad;  
+}  
+
+QPushButton#area_btn:hover {  
+    background-color: #703688;  
+}  
+
+QPushButton#clear_btn {  
+    background-color: #e74c3c;  
+}  
+
+QPushButton#clear_btn:hover {  
+    background-color: #c0392b;  
+}  
+
+/* 标签样式 */  
+QLabel {  
+    color: #2c3e50;  
+    font-size: 14px;  
+    padding: 0 5px;  
+}  
+
+/* 地图容器样式 */  
+QWebEngineView {  
+    border: 1px solid #bdc3c7;  
+    border-radius: 4px;  
+}  
+
+/* 对话框样式 */  
+QInputDialog {  
+    background-color: white;  
+}  
+
+QInputDialog QLabel {  
+    color: #2c3e50;  
+    font-size: 14px;  
+}  
+
+QInputDialog QLineEdit {  
+    border: 1px solid #bdc3c7;  
+    border-radius: 4px;  
+    padding: 5px;  
+}  
+
+QInputDialog QPushButton {  
+    min-width: 60px;  
+}

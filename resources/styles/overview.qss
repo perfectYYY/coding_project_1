@@ -1,0 +1,41 @@
+QFrame#statisticCard {  
+    background-color: white;  
+    border-radius: 10px;  
+    padding: 15px;  
+    min-height: 120px;  
+    min-width: 200px;  
+}  
+
+QLabel#cardTitle {  
+    color: #7f8c8d;  
+    font-size: 14px;  
+    margin-bottom: 10px;  
+}  
+
+QLabel#cardValue {  
+    color: #2c3e50;  
+    font-size: 24px;  
+    font-weight: bold;  
+}  
+
+QLabel#cardUnit {  
+    color: #95a5a6;  
+    font-size: 12px;  
+}  
+
+QPushButton {  
+    padding: 10px 20px;  
+    border-radius: 5px;  
+    border: none;  
+    background-color: #3498db;  
+    color: white;  
+    font-weight: bold;  
+}  
+
+QPushButton:hover {  
+    background-color: #2980b9;  
+}  
+
+QPushButton:pressed {  
+    background-color: #2573a7;  
+}

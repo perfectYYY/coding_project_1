@@ -1,0 +1,210 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <meta charset="utf-8">  
+    <title>无人机路径规划</title>  
+    <style>  
+        html, body, #map {  
+            width: 100%;  
+            height: 100%;  
+            margin: 0;  
+            padding: 0;  
+        }  
+        .info-window {  
+            padding: 8px;  
+            font-size: 14px;  
+        }  
+    </style>  
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=你的百度地图AK"></script>  
+    <script type="text/javascript" src="https://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>  
+    <link rel="stylesheet" href="https://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />  
+</head>  
+<body>  
+    <div id="map"></div>  
+    <script>  
+        // 全局变量  
+        var map;  
+        var routePolyline = null;  
+        var routeMarkers = [];  
+        var areaPolygon = null;  
+        var drawingManager;  
+        var isRoutePlanning = false;  
+        var isAreaPlanning = false;  
+
+        // 初始化地图  
+        function initMap() {  
+            map = new BMap.Map("map");  
+            var point = new BMap.Point(116.404, 39.915); // 北京市中心  
+            map.centerAndZoom(point, 12);  
+            map.enableScrollWheelZoom();  
+            map.addControl(new BMap.NavigationControl());  
+            map.addControl(new BMap.ScaleControl());  
+
+            // 初始化绘制管理器  
+            drawingManager = new BMapLib.DrawingManager(map, {  
+                isOpen: false,  
+                enableDrawingTool: false,  
+                drawingToolOptions: {  
+                    anchor: BMAP_ANCHOR_TOP_RIGHT,  
+                    offset: new BMap.Size(5, 5)  
+                }  
+            });  
+
+            // 绑定事件  
+            map.addEventListener("click", handleMapClick);  
+            drawingManager.addEventListener("polygoncomplete", handlePolygonComplete);  
+        }  
+
+        // 开始航线规划  
+        function startRoutePlanning() {  
+            isRoutePlanning = true;  
+            isAreaPlanning = false;  
+            drawingManager.close();  
+            
+            if (!routePolyline) {  
+                routePolyline = new BMap.Polyline([], {  
+                    strokeColor: "#FF0000",  
+                    strokeWeight: 3,  
+                    strokeOpacity: 0.8  
+                });  
+                map.addOverlay(routePolyline);  
+            }  
+        }  
+
+        // 清除航线  
+        function clearRoute() {  
+            isRoutePlanning = false;  
+            if (routePolyline) {  
+                map.removeOverlay(routePolyline);  
+                routePolyline = null;  
+            }  
+            routeMarkers.forEach(marker => {  
+                map.removeOverlay(marker);  
+            });  
+            routeMarkers = [];  
+        }  
+
+        // 开始区域规划  
+        function startAreaPlanning() {  
+            isAreaPlanning = true;  
+            isRoutePlanning = false;  
+            drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON);  
+            drawingManager.open();  
+        }  
+
+        // 清除区域  
+        function clearArea() {  
+            isAreaPlanning = false;  
+            if (areaPolygon) {  
+                map.removeOverlay(areaPolygon);  
+                areaPolygon = null;  
+            }  
+            drawingManager.close();  
+        }  
+
+        // 处理地图点击事件  
+        function handleMapClick(e) {  
+            if (!isRoutePlanning) return;  
+
+            var point = e.point;  
+            var marker = new BMap.Marker(point, {  
+                enableDragging: true,  
+                enableClicking: true  
+            });  
+
+            // 添加标记点  
+            map.addOverlay(marker);  
+            routeMarkers.push(marker);  
+
+            // 更新航线  
+            updateRoutePath();  
+
+            // 添加标记点右键菜单  
+            var markerMenu = new BMap.ContextMenu();  
+            markerMenu.addItem(new BMap.MenuItem('删除航点', function() {  
+                map.removeOverlay(marker);  
+                var index = routeMarkers.indexOf(marker);  
+                if (index > -1) {  
+                    routeMarkers.splice(index, 1);  
+                }  
+                updateRoutePath();  
+            }));  
+            marker.addContextMenu(markerMenu);  
+
+            // 拖动结束后更新航线  
+            marker.addEventListener("dragend", function() {  
+                updateRoutePath();  
+            });  
+
+            // 添加点击事件显示信息窗口  
+            marker.addEventListener("click", function() {  
+                var infoWindow = new BMap.InfoWindow(  
+                    `<div class="info-window">  
+                        <p>经度：${point.lng.toFixed(6)}</p>  
+                        <p>纬度：${point.lat.toFixed(6)}</p>  
+                        <p>序号：${routeMarkers.indexOf(marker) + 1}</p>  
+                    </div>`  
+                );  
+                marker.openInfoWindow(infoWindow);  
+            });  
+        }  
+
+        // 处理多边形绘制完成事件  
+        function handlePolygonComplete(e) {  
+            if (!isAreaPlanning) return;  
+
+            if (areaPolygon) {  
+                map.removeOverlay(areaPolygon);  
+            }  
+            areaPolygon = e.overlay;  
+            areaPolygon.enableEditing();  
+
+            // 添加右键菜单  
+            var areaMenu = new BMap.ContextMenu();  
+            areaMenu.addItem(new BMap.MenuItem('删除区域', function() {  
+                clearArea();  
+            }));  
+            areaPolygon.addContextMenu(areaMenu);  
+
+            drawingManager.close();  
+        }  
+
+        // 更新航线路径  
+        function updateRoutePath() {  
+            if (!routePolyline) return;  
+            var points = routeMarkers.map(marker => marker.getPosition());  
+            routePolyline.setPath(points);  
+        }  
+
+        // 获取航线点位信息  
+        function getRoutePoints() {  
+            var points = routeMarkers.map(marker => {  
+                var pos = marker.getPosition();  
+                return {  
+                    lng: pos.lng,  
+                    lat: pos.lat,  
+                    index: routeMarkers.indexOf(marker)  
+                };  
+            });  
+            console.log(JSON.stringify(points));  
+            return points;  
+        }  
+
+        // 获取区域点位信息  
+        function getAreaPoints() {  
+            if (!areaPolygon) return [];  
+            var points = areaPolygon.getPath().map(point => {  
+                return {  
+                    lng: point.lng,  
+                    lat: point.lat  
+                };  
+            });  
+            console.log(JSON.stringify(points));  
+            return points;  
+        }  
+
+        // 初始化地图  
+        initMap();  
+    </script>  
+</body>  
+</html>
