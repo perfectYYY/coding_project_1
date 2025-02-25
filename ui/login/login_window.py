@@ -25,7 +25,7 @@ class LoginWindow(QMainWindow):
     def init_ui(self):  
         """初始化UI"""  
         self.setWindowTitle('登录/注册')  
-        self.setFixedSize(450, 600)  
+        self.setFixedSize(500,800)  
         
         # 创建中心部件  
         central_widget = QWidget()  
@@ -33,8 +33,8 @@ class LoginWindow(QMainWindow):
         
         # 主布局  
         self.main_layout = QVBoxLayout(central_widget)  
-        self.main_layout.setSpacing(25)  
-        self.main_layout.setContentsMargins(40, 50, 40, 50)  
+        self.main_layout.setSpacing(35)  
+        self.main_layout.setContentsMargins(60, 70, 60, 70)  
         
         # 创建堆叠窗口部件  
         self.stacked_widget = QStackedWidget()  
@@ -72,14 +72,14 @@ class LoginWindow(QMainWindow):
         """创建登录页面"""  
         page = QWidget()  
         layout = QVBoxLayout(page)  
-        layout.setSpacing(25)  
+        layout.setSpacing(35)  
         
         # 标题容器  
         title_container = QWidget()  
         title_layout = QVBoxLayout(title_container)  
         
         # 标题  
-        title = QLabel('DJIfly')  
+        title = QLabel('Genshin Impact Fly')
         title.setObjectName("title")  
         title.setAlignment(Qt.AlignCenter)  
         title_layout.addWidget(title)  
@@ -201,7 +201,7 @@ class LoginWindow(QMainWindow):
         
         # 按钮布局  
         button_layout = QVBoxLayout()  
-        button_layout.setSpacing(15)  
+        button_layout.setSpacing(20)  
         
         # 注册按钮  
         register_btn = QPushButton('注 册')  
@@ -294,7 +294,7 @@ class LoginWindow(QMainWindow):
         self.start_loading_animation()  
         
         # 使用QTimer模拟网络请求延迟  
-        QTimer.singleShot(300, lambda: self.auth_manager.login(username, password))  
+        QTimer.singleShot(150, lambda: self.auth_manager.login(username, password))  
     
     def register(self):  
         """处理注册"""  

@@ -19,7 +19,7 @@ from .task_planning import TaskPlanningPage
 from .monitoring import MonitoringPage  
 from .overview_page import OverviewPage  
 from .ai_assistant import AIAssistant  
-from .settings import SettingsPage  # 新添加的导入  
+from .settings import SettingsPage
 import os  
 
 class IconFactory:  

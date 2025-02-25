@@ -28,7 +28,7 @@ class DeviceDialog(QDialog):
         
         # 设备型号  
         self.model_input = QComboBox()  
-        self.model_input.addItems(["Mavic Air 2", "Mavic 2 Pro", "Phantom 4 Pro", "Matrice 300 RTK"])  
+        self.model_input.addItems(["GIF model3", "GIF model5", "GIF modelY", "Genshin Impact series X"])  
         if self.device_data:  
             self.model_input.setCurrentText(self.device_data.get('model', ''))  
         layout.addRow("设备型号:", self.model_input)  
