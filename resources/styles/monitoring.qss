@@ -291,3 +291,31 @@ QGroupBox::title {
     left: 10px;  
     padding: 0 5px;  
 }
+/* 设备管理按钮样式 */
+QPushButton[class="success"] {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+}
+
+QPushButton[class="success"]:hover {
+    background-color: #218838;
+}
+
+QPushButton[class="danger"] {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+}
+
+QPushButton[class="danger"]:hover {
+    background-color: #c82333;
+}
+
+/* 卡片选中状态 */
+DeviceMonitorCard[selected="true"] {
+    border: 2px solid #007bff;
+    background-color: #e3f2fd;
+}

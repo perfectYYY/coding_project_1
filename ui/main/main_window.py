@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (  
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,   
     QPushButton, QLabel, QStackedWidget, QFrame,  
-    QGraphicsOpacityEffect, QComboBox, QMessageBox  
+    QGraphicsOpacityEffect, QComboBox, QMessageBox, QTabWidget 
 )  
 from PyQt5.QtCore import (  
     Qt, QPropertyAnimation, QEasingCurve, QPoint,   
@@ -12,9 +12,7 @@ from PyQt5.QtGui import (
     QPixmap  
 )  
 from math import cos, sin, pi  
-
 from .mapping import MappingPage  
-from .device_management import DeviceManagementPage  
 from .task_planning import TaskPlanningPage  
 from .monitoring import MonitoringPage  
 from .overview_page import OverviewPage  
@@ -189,45 +187,62 @@ class NavigationButton(QPushButton):
         self.setAutoExclusive(True)  
         self.setFixedHeight(50)  
 
-class SlideStackedWidget(QStackedWidget):  
-    """带滑动动画的堆叠窗口"""  
-    def __init__(self, parent=None):  
-        super().__init__(parent)  
-        self.animation = QPropertyAnimation(self, b"pos")  
-        self.animation.setDuration(300)  
-        self.animation.setEasingCurve(QEasingCurve.OutCubic)  
+class SlideStackedWidget(QStackedWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.animation = QPropertyAnimation(self, b"pos")
+        self.animation.setDuration(300)
+        self.animation.setEasingCurve(QEasingCurve.OutCubic)
+        self._current_index = 0
 
-    def slide_in(self, index):  
-        """滑入指定索引的窗口"""  
-        if self.currentIndex() == index:  
-            return  
-        
-        offset = self.width()  
-        if index > self.currentIndex():  
-            offset = -offset  
-
-        nextPage = self.widget(index)  
-        if nextPage is not None:  
-            nextPage.setGeometry(0, 0, self.width(), self.height())  
+    def slide_in(self, index):
+        """滑入指定索引的窗口（安全增强版）"""
+        try:
+            # 边界检查
+            if index < 0 or index >= self.count():
+                raise IndexError(f"无效索引: {index} (总页数: {self.count()})")
             
-        pos = self.pos()  
-        self.animation.setStartValue(pos)  
-        self.animation.setEndValue(pos + QPoint(offset, 0))  
-        
-        self.animation.finished.connect(lambda: self.slide_in_finished(index))  
-        self.animation.start()  
+            # 重复点击检查
+            if index == self.currentIndex():
+                return
 
-    def slide_in_finished(self, index):  
-        """滑入动画完成"""  
-        self.setCurrentIndex(index)  
-        self.move(self.animation.startValue())  
-        self.animation.finished.disconnect()  
+            # 动画参数设置
+            offset = self.width() if index > self.currentIndex() else -self.width()
+            next_page = self.widget(index)
+            
+            # 页面可见性处理
+            next_page.show()
+            next_page.raise_()
 
+            # 动画配置
+            self.animation.stop()
+            self.animation.setStartValue(self.pos())
+            self.animation.setEndValue(self.pos() + QPoint(offset, 0))
+            self.animation.finished.connect(
+                lambda: self._complete_slide(index)
+            )
+            self.animation.start()
+            
+            # 更新当前索引
+            self._current_index = index
+
+        except Exception as e:
+            print(f"页面切换失败: {str(e)}")
+            QMessageBox.warning(self.parent(), "错误", f"无法切换页面: {str(e)}")
+
+    def _complete_slide(self, index):
+        """完成动画后的处理"""
+        try:
+            self.setCurrentIndex(index)
+            self.move(self.animation.startValue())
+            self.animation.finished.disconnect()
+        except Exception as e:
+            print(f"动画完成处理失败: {str(e)}")
 class MainWindow(QMainWindow):  
-    def __init__(self):  
-        super().__init__()  
+    def __init__(self):
+        super().__init__()
         self.init_ui()  
-        self.load_stylesheet()  
+        self.load_stylesheet()
 
     def init_ui(self):  
         """初始化UI"""  
@@ -250,7 +265,26 @@ class MainWindow(QMainWindow):
         layout.setStretch(0, 1)  
         layout.setStretch(1, 5)  
         
-        self.init_status_update()  
+        self.init_status_update()
+
+    def _connect_signals(self):
+        # 修改信号连接方式
+        self.monitor_page.device_status_changed.connect(
+            self._handle_device_status_change
+        )
+
+    def _handle_device_status_change(self, device_id, status):
+        """统一处理设备状态变更"""
+        # 更新设备管理页面的数据
+        for serial, device in self.device_manager.devices.items():
+            if device.get('id') == device_id:  # 假设设备数据中有id字段
+                device['status'] = status
+                self.device_manager.device_updated.emit(device)
+                break
+    def load_initial_devices(self, devices):
+        """初始化加载设备"""
+        for serial, device in devices.items():
+            self.add_device_card(device)
 
     def create_nav_widget(self):  
         """创建导航栏"""  
@@ -275,7 +309,6 @@ class MainWindow(QMainWindow):
         self.nav_buttons = []  
         nav_items = [  
             ("总览", "overview"),  
-            ("设备管理", "devices"),  
             ("任务规划", "tasks"),  
             ("实时监控", "monitor"),  
             ("地图规划", "map"),  
@@ -326,8 +359,7 @@ class MainWindow(QMainWindow):
         self.stack_widget = SlideStackedWidget()  
         
         # 添加各个页面  
-        self.stack_widget.addWidget(OverviewPage())  
-        self.stack_widget.addWidget(DeviceManagementPage())  
+        self.stack_widget.addWidget(OverviewPage())    
         self.stack_widget.addWidget(TaskPlanningPage())  
         self.stack_widget.addWidget(MonitoringPage())  
         self.stack_widget.addWidget(MappingPage())  
@@ -367,26 +399,36 @@ class MainWindow(QMainWindow):
         self.page_title.setText(self.nav_buttons[index].text())  
         self.nav_buttons[index].setChecked(True)  
 
-    def show_settings(self):  
-        """显示设置页面"""  
-        settings_page = SettingsPage(self)  
-        settings_page.settingsChanged.connect(self.handle_settings_changed)  
+    def show_settings(self):
+        """显示设置页面（安全版）"""
+        try:
+            # 创建设置页面前检查现有实例
+            existing_index = None
+            for i in range(self.stack_widget.count()):
+                if isinstance(self.stack_widget.widget(i), SettingsPage):
+                    existing_index = i
+                    break
+
+            if existing_index is None:
+                settings_page = SettingsPage(self)
+                settings_page.settingsChanged.connect(self.handle_settings_changed)
+                existing_index = self.stack_widget.addWidget(settings_page)
+
+            # 更新界面状态
+            self.page_title.setText("设置")
+            for btn in self.nav_buttons:
+                btn.setChecked(False)
+            self.nav_widget.findChild(NavigationButton, "settingsButton").setChecked(True)
         
-        # 将设置页面添加到堆叠窗口  
-        settings_index = self.stack_widget.addWidget(settings_page)  
-        
-        # 更新页面标题  
-        self.page_title.setText("设置")  
-        
-        # 取消选中所有导航按钮  
-        for btn in self.nav_buttons:  
-            btn.setChecked(False)  
-        
-        # 将设置按钮设为选中状态  
-        self.nav_widget.findChild(NavigationButton, "settingsButton").setChecked(True)  
-        
-        # 切换到设置页面  
-        self.stack_widget.slide_in(settings_index)  
+            # 安全切换
+            if 0 <= existing_index < self.stack_widget.count():
+                self.stack_widget.slide_in(existing_index)
+            else:
+                raise IndexError("设置页面索引无效")
+
+        except Exception as e:
+            print(f"打开设置失败: {str(e)}")
+            QMessageBox.critical(self, "错误", f"无法打开设置: {str(e)}")  
 
     def handle_settings_changed(self, settings):  
         """处理设置变更"""  

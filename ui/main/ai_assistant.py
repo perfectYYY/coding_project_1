@@ -1,11 +1,19 @@
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QTextEdit,   
-                            QPushButton, QLabel, QScrollArea, QFrame, QApplication,QGraphicsDropShadowEffect)  
-from PyQt5.QtCore import Qt, pyqtSignal, QSize, QTimer, QObject, QThread, QPropertyAnimation, QEasingCurve  
-from PyQt5.QtGui import QFont, QTextCursor, QPainter, QColor, QPen  
-import json  
 import os  
+import json  
+import asyncio  
+import aiohttp  
+import traceback  
 import math  
-from openai import OpenAI  
+import threading
+from PyQt5.QtWidgets import (  
+    QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton,   
+    QLabel, QScrollArea, QFrame, QApplication, QGraphicsDropShadowEffect  
+)  
+from PyQt5.QtCore import (  
+    Qt, pyqtSignal, QSize, QTimer, QObject, QThread,   
+    QPropertyAnimation, QEasingCurve, QEventLoop  
+)  
+from PyQt5.QtGui import QFont, QTextCursor, QPainter, QColor, QPen  
 
 class LoadingWidget(QWidget):  
     """加载动画组件"""  
@@ -41,7 +49,6 @@ class LoadingWidget(QWidget):
         center = self.rect().center()  
         radius = min(self.width(), self.height()) / 2 - 5  
         
-        # 画一个不完整的圆，使用渐变透明效果  
         for i in range(0, 360, 10):  
             alpha = int(255 * (1 - i / 360))  
             pen.setColor(QColor(0, 122, 255, alpha))  
@@ -61,44 +68,85 @@ class AIWorker(QObject):
     started = pyqtSignal()  
     finished = pyqtSignal()  
 
-    def __init__(self, client):  
+    def __init__(self, api_key, base_url):  
         super().__init__()  
-        self.client = client  
+        self.api_key = api_key  
+        self.base_url = base_url  
         self.conversation_history = []  
+        self.event_loop = None  
+        self.is_processing = False  
 
     def process_message(self, message, history):  
+        if self.is_processing:  
+            self.error_occurred.emit("正在处理上一个请求，请稍候")  
+            return  
+
         self.started.emit()  
+        self.is_processing = True  
+        self.conversation_history = history.copy()  
+
+        # 使用新线程处理异步请求  
+        threading.Thread(target=self.async_process_message, daemon=True).start()  
+
+    def async_process_message(self):  
         try:  
-            self.conversation_history = history.copy()  
-            response = self.client.chat.completions.create(  
-                model="deepseek-chat",  
-                messages=self.conversation_history,  
-                stream=False  
-            )  
-            ai_response = response.choices[0].message.content  
-            self.response_ready.emit(ai_response)  
+            # 创建新的事件循环  
+            loop = asyncio.new_event_loop()  
+            asyncio.set_event_loop(loop)  
+
+            # 同步执行异步方法  
+            response = loop.run_until_complete(self.fetch_ai_response())  
+            
+            # 使用信号发送响应  
+            self.response_ready.emit(response)  
+
         except Exception as e:  
-            self.error_occurred.emit(str(e))  
+            error_msg = f"错误详情：{str(e)}\n{traceback.format_exc()}"  
+            self.error_occurred.emit(error_msg)  
+        
         finally:  
+            self.is_processing = False  
             self.finished.emit()  
 
+    async def fetch_ai_response(self):  
+        headers = {  
+            "Authorization": f"Bearer {self.api_key}",  
+            "Content-Type": "application/json"  
+        }  
+        payload = {  
+            "model": "deepseek-chat",  
+            "messages": self.conversation_history  
+        }  
+
+        async with aiohttp.ClientSession() as session:  
+            async with session.post(  
+                f"{self.base_url}/v1/chat/completions",   
+                headers=headers,   
+                json=payload,  
+                timeout=30  
+            ) as response:  
+                if response.status != 200:  
+                    error_text = await response.text()  
+                    raise Exception(f"API Error: {response.status} - {error_text}")  
+                
+                result = await response.json()  
+                ai_response = result['choices'][0]['message']['content']  
+                return ai_response  
+
 class MessageWidget(QFrame):  
-    """单条消息组件"""  
+    """消息组件"""  
     def __init__(self, content, is_user=True, parent=None):  
         super().__init__(parent)  
         self.init_ui(content, is_user)  
 
     def init_ui(self, content, is_user):  
-        # 创建主布局  
         main_layout = QHBoxLayout(self)  
         main_layout.setContentsMargins(10, 5, 10, 5)  
         
-        # 创建消息气泡  
         message_bubble = QFrame()  
         bubble_layout = QVBoxLayout(message_bubble)  
         bubble_layout.setContentsMargins(10, 10, 10, 10)  
 
-        # 添加阴影效果  
         shadow = QGraphicsDropShadowEffect()  
         shadow.setBlurRadius(10)  
         shadow.setXOffset(0)  
@@ -106,26 +154,21 @@ class MessageWidget(QFrame):
         shadow.setColor(QColor(0, 0, 0, 30))  
         message_bubble.setGraphicsEffect(shadow)  
         
-        # 创建文本显示区域  
         message_text = QLabel(content)  
         message_text.setWordWrap(True)  
         message_text.setTextFormat(Qt.AutoText)  
         message_text.setOpenExternalLinks(True)  
         
-        # 设置字体  
         font = QFont()  
         font.setPointSize(10)  
         message_text.setFont(font)  
         
-        # 计算文本大小并调整气泡大小  
         metrics = message_text.fontMetrics()  
         text_width = min(400, metrics.boundingRect(0, 0, 400, 1000,   
                         Qt.TextWordWrap | Qt.AlignLeft, content).width())  
         message_bubble.setFixedWidth(text_width + 40)  
         
-        # 设置样式和布局位置  
         if is_user:  
-            # 用户消息靠右  
             main_layout.addStretch()  
             message_bubble.setStyleSheet("""  
                 QFrame {  
@@ -136,7 +179,6 @@ class MessageWidget(QFrame):
             """)  
             message_text.setStyleSheet("color: white; padding: 5px;")  
         else:  
-            # AI消息靠左  
             message_bubble.setStyleSheet("""  
                 QFrame {  
                     background-color: #E9E9E9;  
@@ -147,10 +189,8 @@ class MessageWidget(QFrame):
             message_text.setStyleSheet("color: black; padding: 5px;")  
             main_layout.insertStretch(1, 1)  
         
-        # 添加文本到气泡  
         bubble_layout.addWidget(message_text)  
         
-        # 根据消息来源添加到布局  
         if is_user:  
             main_layout.addWidget(message_bubble)  
         else:  
@@ -162,34 +202,36 @@ class AIAssistant(QWidget):
     def __init__(self, parent=None):  
         super().__init__(parent)  
         
-        # 初始化OpenAI客户端  
-        self.client = OpenAI(  
+        # 初始化异步工作线程  
+        self.thread = QThread()  
+        self.worker = AIWorker(  
             api_key="sk-58b389403c9f4fb7b06409d9be124f55",  
             base_url="https://api.deepseek.com"  
         )  
+        self.worker.moveToThread(self.thread)  
         
+        # 连接信号  
+        self.worker.response_ready.connect(self.handle_ai_response)  
+        self.worker.error_occurred.connect(self.handle_error)  
+        self.worker.started.connect(self.on_processing_started)  
+        self.worker.finished.connect(self.on_processing_finished)  
+        
+        # 启动线程  
+        self.thread.start()  
+
         # 初始化对话历史  
         self.conversation_history = [  
             {"role": "system", "content": self.get_system_prompt()}  
         ]  
         
-        # 设置AI工作线程  
-        self.thread = QThread()  
-        self.worker = AIWorker(self.client)  
-        self.worker.moveToThread(self.thread)  
-        self.worker.response_ready.connect(self.handle_ai_response)  
-        self.worker.error_occurred.connect(self.handle_error)  
-        self.worker.started.connect(self.on_processing_started)  
-        self.worker.finished.connect(self.on_processing_finished)  
-        self.thread.start()  
-
         # 初始化加载动画组件  
         self.loading_widget = LoadingWidget(self)  
         self.loading_widget.hide()  
         
         # 初始化UI  
         self.init_ui()  
-        self.load_stylesheet()
+        self.load_stylesheet()  
+
     def load_stylesheet(self):  
         """加载样式表"""  
         try:  
@@ -286,7 +328,8 @@ class AIAssistant(QWidget):
         input_layout.addWidget(self.input_box)  
         input_layout.addWidget(send_button)  
         
-        layout.addWidget(input_container)
+        layout.addWidget(input_container)  
+        
         # 添加欢迎消息  
         welcome_message = (  
             "您好！我是您的无人机助手。我可以帮您：\n"  
@@ -428,11 +471,14 @@ CREATE_TASK:
         self.thread.wait()  
         super().closeEvent(event)  
 
-if __name__ == '__main__':  
+def main():  
     import sys  
     
     app = QApplication(sys.argv)  
     assistant = AIAssistant()  
     assistant.resize(800, 600)  
     assistant.show()  
-    sys.exit(app.exec_())
+    sys.exit(app.exec_())  
+
+if __name__ == '__main__':  
+    main()
