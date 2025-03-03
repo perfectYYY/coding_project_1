@@ -1,0 +1,15 @@
+{  
+    "name": "Ubuntu PyQt5 Dev Container",  
+    "image": "yyy13465/pyqt5:20250303_192759",  
+    "customizations": {  
+        "vscode": {  
+            "extensions": [  
+                "ms-python.python",  
+                "ms-python.vscode-pylance"  
+            ]  
+        }  
+    },  
+    "forwardPorts": [8000],  
+    "postCreateCommand": "pip install pyqt5",  
+    "remoteUser": "ubuntu"  
+}
